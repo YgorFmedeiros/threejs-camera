@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 /**
  * Base
@@ -8,9 +9,21 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Sizes
 const sizes = {
-    width: 800,
-    height: 600
+    width: window.innerWidth,
+    height: window.innerHeight
 }
+
+window.addEventListener('resize', () =>
+{
+    // Update sizes
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+		// Update camera
+    camera.aspect = sizes.width / sizes.height
+		camera.updateProjectionMatrix()
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height)
+})
 
 // Scene
 const scene = new THREE.Scene()
@@ -51,6 +64,31 @@ const tick = () =>
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
+
+    //update controls
+    controls.update()
 }
+
+// Controls
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
+
+//dark mode 
+let darkMode = true
+
+window.addEventListener('keypress',(event)=>{
+    if(event.code == 'KeyR'){
+        camera.position.set(0,0,2)
+        controls.target.set(0,0,0)
+    }
+
+		if (event.code == 'KeyO'){
+        (darkMode) ? 
+            renderer.setClearColor( 0xffffff, 1): 
+            renderer.setClearColor( 0x000000, 1)
+        darkMode = !darkMode
+    }
+})
+
 
 tick()
